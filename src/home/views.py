@@ -1,7 +1,10 @@
 from django.shortcuts import render
 from visits.models import PageVisit
 
-def home_page_view(request, *args, **kwargs):
+def about_view(request, *args, **kwargs):
+    return home_view(request, *args, **kwargs)
+
+def home_view(request, *args, **kwargs):
     qs= PageVisit.objects.all()
     page_qs= PageVisit.objects.filter(path=request.path)
     my_title= "Hello Pial"
@@ -16,3 +19,4 @@ def home_page_view(request, *args, **kwargs):
 
     PageVisit.objects.create(path=request.path)
     return render(request, html_template, context)
+
