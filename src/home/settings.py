@@ -9,10 +9,11 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
+import re
 from pathlib import Path
 
-import re
+
 from django.template import base as template_base
 
 # Add support for multi-line template tags
@@ -30,7 +31,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-rgbtj6x!p%=&(lz4d_nof*(t7vfpejj3fiw-*-ntwjyo730x9a'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = str(os.environ.get("DEBUG")).lower()=="true"
+print("DEBUG:", DEBUG, type(DEBUG))
 
 ALLOWED_HOSTS = [
     ".railway.app" # https://saas.prod.railway.app
