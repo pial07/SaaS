@@ -9,11 +9,15 @@ def home_view(request, *args, **kwargs):
     page_qs= PageVisit.objects.filter(path=request.path)
     my_title= "Hello Pial"
     html_template= "home.html"
+    if qs.count() <= 0:
+        count=1
+    else:
+        count=qs.count()    
     context= {"title": my_title, 
               "qs": qs.count(),
               "page_visits": page_qs.count(),
-              "total_visits": qs.count(),
-              "percent": (page_qs.count()*100)/qs.count(),
+              "total_visits": count,
+              "percent": (page_qs.count()*100)/count,
               }
     path=request.path
 
