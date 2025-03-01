@@ -2,6 +2,8 @@ from django.shortcuts import render
 from visits.models import PageVisit
 
 def about_view(request, *args, **kwargs):
+    if request.user.is_authenticated:
+        print(request.user.first_name)
     return home_view(request, *args, **kwargs)
 
 def home_view(request, *args, **kwargs):
