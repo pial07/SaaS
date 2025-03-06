@@ -76,8 +76,17 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'commando',
     'visits',
+    'profiles',
+    #third party packages
+    "allauth_ui",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.github",
+    "widget_tweaks",
+    "slippers",
 ]
-
+ALLAUTH_UI_THEME = "light"
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -86,6 +95,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    "allauth.account.middleware.AccountMiddleware",
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -103,6 +113,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+         "builtins": ["slippers.templatetags.slippers"],   
         },
     },
 ]
@@ -150,6 +161,29 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+#Django Allauth config
+ACCOUNT_LOGIN_METHOD = "username_email"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_SUBJECT_PREFIX = "[Pial]"
+LOGIN_REDIRECT_URL = "/"  # Redirect after login
+# ACCOUNT_LOGOUT_REDIRECT_URL = "/"  # Redirect after logout
+# ACCOUNT_SIGNUP_REDIRECT_URL = "/"  # Redirect after signup
+AUTHENTICATION_BACKENDS = [
+    # ...
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by email
+    'allauth.account.auth_backends.AuthenticationBackend',
+    # ...
+]
+SOCIALACCOUNT_PROVIDERS = {
+    "github": {
+        "VERIFIED_EMAIL": True,
+        
+        }
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/

@@ -1,0 +1,3 @@
+components:
+  navbar_component:
+    template: "nav/navbar.html"
