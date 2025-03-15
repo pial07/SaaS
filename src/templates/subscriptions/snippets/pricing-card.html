@@ -10,7 +10,9 @@
   {% endif %}
   <div class="flex justify-center items-baseline my-8">
     <span class="mr-2 text-5xl font-extrabold">${{object.price}}</span>
-    <span class="text-gray-500 dark:text-gray-400">/{{ object.get_interval_display }}</span>
+    <span class="text-gray-500 dark:text-gray-400"
+      >/{{ object.get_interval_display }}</span
+    >
   </div>
   <!-- List -->
   <ul role="list" class="mb-8 space-y-4 text-left">
@@ -34,8 +36,8 @@
     {% endfor %}
   </ul>
   <a
-    href="#"
+    href="{{ object.get_checkout_url }}"
     class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:text-white dark:focus:ring-blue-900"
-    >Get started</a
+    >Select Plan</a
   >
 </div>

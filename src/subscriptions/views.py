@@ -13,6 +13,8 @@ def subscription_price_view(request,interval="month"):
     object_list= qs.filter(interval=inv_mo)
     if interval==inv_yr:
         object_list= qs.filter(interval=inv_yr)
+        active=inv_yr
+        
     return render(request, "subscriptions/pricing.html", {"object_list": object_list,
                                                           "mo_url":mo_url,"yr_url":yr_url,
                                                           "active":active,

@@ -19,7 +19,7 @@ endblock head_title %} {% block content %}
           <li class="me-2">
             <a
               href="{{mo_url}}"
-              class="{% if active == 'month' %} inline-block px-4 py-3 text-white bg-blue-600 rounded-lg active {% else %}inline-block px-4 py-3 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white {% endif %}"
+              class="{% if active == 'month' %}inline-block px-4 py-3 text-white bg-blue-600 rounded-lg active{% else %}inline-block px-4 py-3 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white{% endif %}"
               aria-current="page"
               >Monthly</a
             >
@@ -27,7 +27,7 @@ endblock head_title %} {% block content %}
           <li class="me-2">
             <a
               href="{{yr_url}}"
-              class="{% if active == 'year' %} inline-block px-4 py-3 text-white bg-blue-600 rounded-lg active {% else %}inline-block px-4 py-3 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white {% endif %}"
+              class="{% if active == 'year' %}inline-block px-4 py-3 text-white bg-blue-600 rounded-lg active{% else %}inline-block px-4 py-3 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white{% endif %}"
               >Yearly</a
             >
           </li>

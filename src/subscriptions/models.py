@@ -2,7 +2,7 @@ import helpers.billing
 from django.db import models
 from django.contrib.auth.models import Group,Permission
 from django.db.models.signals import post_save
-
+from django.urls import reverse
 from django.conf import settings
 
 User=settings.AUTH_USER_MODEL
@@ -68,6 +68,8 @@ class SubscriptionPrice(models.Model):
     class Meta:
         ordering=["subscription__order","order","featured","-updated"]
     
+    def get_checkout_url(self):
+        return reverse("sub-price-checkout", kwargs={"price_id":self.id})
     @property
     def display_features_list(self):
         if not self.subscription:
@@ -119,9 +121,38 @@ class SubscriptionPrice(models.Model):
 
 
 class UserSubscription(models.Model):
+    class SubscriptionStatus(models.TextChoices):
+        ACTIVE = 'active', 'Active'
+        TRIALING = 'trialing', 'Trialing'
+        INCOMPLETE = 'incomplete', 'Incomplete'
+        INCOMPLETE_EXPIRED = 'incomplete_expired', 'Incomplete Expired'
+        PAST_DUE = 'past_due', 'Past Due'
+        CANCELED = 'canceled', 'Canceled'
+        UNPAID = 'unpaid', 'Unpaid'
+        PAUSED = 'paused', 'Paused'
     user=models.OneToOneField(User, on_delete=models.CASCADE) 
     subscription=models.ForeignKey(Subscription, on_delete=models.SET_NULL, null=True, blank=True)
-    active=models.BooleanField(default=True)          
+    stripe_id=models.CharField(max_length=120, blank=True, null=True)
+    active=models.BooleanField(default=True)    
+    user_cancelled=models.BooleanField(default=False)
+    original_period_start=models.DateTimeField(auto_now=False, auto_now_add=False, null=True, blank=True) 
+    current_period_end=models.DateTimeField(auto_now=False, auto_now_add=False, null=True, blank=True)  
+    current_period_start=models.DateTimeField(auto_now=False, auto_now_add=False, null=True, blank=True)  
+    status=models.CharField(max_length=20,choices=SubscriptionStatus.choices, blank=True, null=True)
+
+    @property
+    def billing_cycle_anchor(self):
+        if not self.current_period_end:
+            return None
+        return int(self.current_period_end.timestamp())
+    
+    def save(self, *args, **kwargs):
+        if (self.original_period_start is None and
+            self.current_period_start is not None
+            ):
+            self.original_period_start = self.current_period_start
+        super().save(*args, **kwargs) 
+
 def user_sub_post_save(sender, instance, *args, **kwargs):
     user_sub_instance = instance
     user = user_sub_instance.user
