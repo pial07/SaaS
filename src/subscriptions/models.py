@@ -2,6 +2,7 @@ import helpers.billing
 from django.db import models
 from django.contrib.auth.models import Group,Permission
 from django.db.models.signals import post_save
+from django.db.models import Q
 from django.urls import reverse
 from django.conf import settings
 
@@ -118,10 +119,7 @@ class SubscriptionPrice(models.Model):
 
 
 
-
-
-class UserSubscription(models.Model):
-    class SubscriptionStatus(models.TextChoices):
+class SubscriptionStatus(models.TextChoices):
         ACTIVE = 'active', 'Active'
         TRIALING = 'trialing', 'Trialing'
         INCOMPLETE = 'incomplete', 'Incomplete'
@@ -130,6 +128,25 @@ class UserSubscription(models.Model):
         CANCELED = 'canceled', 'Canceled'
         UNPAID = 'unpaid', 'Unpaid'
         PAUSED = 'paused', 'Paused'
+class UserSubscriptionQuerySet(models.QuerySet):
+    def by_active_trialing(self):
+        active_qs_lookup=(Q(status=SubscriptionStatus.ACTIVE)| Q(status=SubscriptionStatus.TRIALING))
+        return self.filter(active_qs_lookup)
+    def by_user_ids(self,user_ids=None):
+        qs=self
+        if isinstance(user_ids,list):
+            qs=qs.filter(user_id__in=user_ids)
+        elif isinstance(user_ids,int):
+            qs=qs.filter(user_id__in=[user_ids]) 
+        elif isinstance(user_ids,str):
+            qs=qs.filter(user_id__in=[user_ids])
+        return qs    
+
+class UserSubscriptionManager(models.Manager):
+    def get_queryset(self):
+        return UserSubscriptionQuerySet(self.model, using=self._db)
+class UserSubscription(models.Model):
+    
     user=models.OneToOneField(User, on_delete=models.CASCADE) 
     subscription=models.ForeignKey(Subscription, on_delete=models.SET_NULL, null=True, blank=True)
     stripe_id=models.CharField(max_length=120, blank=True, null=True)
@@ -137,8 +154,35 @@ class UserSubscription(models.Model):
     user_cancelled=models.BooleanField(default=False)
     original_period_start=models.DateTimeField(auto_now=False, auto_now_add=False, null=True, blank=True) 
     current_period_end=models.DateTimeField(auto_now=False, auto_now_add=False, null=True, blank=True)  
-    current_period_start=models.DateTimeField(auto_now=False, auto_now_add=False, null=True, blank=True)  
+    current_period_start=models.DateTimeField(auto_now=False, auto_now_add=False, null=True, blank=True) 
+    cancel_at_period_end=models.BooleanField(default=False) 
     status=models.CharField(max_length=20,choices=SubscriptionStatus.choices, blank=True, null=True)
+
+    objects=UserSubscriptionManager()
+
+    def get_absolute_url(self):
+        return reverse("user-subscription")
+    
+    def get_cancel_url(self):
+        return reverse("user-subscription-cancel")
+    @property
+    def plan_name(self):
+        if not self.subscription:
+            return None
+        return self.subscription.name
+    
+    @property
+    def is_active_status(self):
+       return self.status in [SubscriptionStatus.ACTIVE,SubscriptionStatus.TRIALING]
+
+    def serialize(self):
+        return {
+            "plan_name": self.plan_name,
+            "status": self.status,
+            "current_period_start":self.current_period_start,
+            "current_period_end":self.current_period_end,
+        }
+
 
     @property
     def billing_cycle_anchor(self):

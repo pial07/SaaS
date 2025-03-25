@@ -35,6 +35,8 @@ urlpatterns = [
     path('protected/', views.pwd_protected_view, name='pwd_protected_view'),
     path('protected/user-only', views.user_only_view, name='user-only-view'),
     path('protected/staff-only', views.staff_only_view, name='staff-only-view'),
+    path('accounts/billing', subscription_views.user_subscription_view, name='user-subscription'),
+    path('accounts/billing/cancel', subscription_views.user_subscription_cancel_view, name='user-subscription-cancel'),
     path('accounts/', include('allauth.urls')),
     path('profiles/', include('profiles.urls')),
 ]

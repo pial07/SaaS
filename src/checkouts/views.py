@@ -1,4 +1,5 @@
 import helpers.billing
+from django.contrib import messages
 from django.shortcuts import render,redirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
@@ -80,7 +81,9 @@ def checkout_finalize_view(request):
          
         for k,v in updated_sub_options.items():
             setattr(_user_sub_obj,k,v)
-        _user_sub_obj.save()    
+        _user_sub_obj.save()  
+        messages.success(request, "success thank you for joining")  
+        return redirect(_user_sub_obj.get_absolute_url())
     context={}
     return render(request,"checkout/success.html",context)
     
