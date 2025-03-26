@@ -20,8 +20,10 @@ from . import views
 from auth import views as auth_views
 from checkouts import views as checkout_views
 from subscriptions import views as subscription_views
+from landing import views as landing_views
 
 urlpatterns = [
+    path('', landing_views.landing_page_view, name='home'),
     path('admin/', admin.site.urls),
     path('login/', auth_views.login_view, name='login'),
     path('register/', auth_views.register_view, name='login'),
