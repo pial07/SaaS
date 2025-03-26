@@ -4,8 +4,9 @@ from . import date_utils
 
 DJANGO_DEBUG=config("DJANGO_DEBUG",default=False,cast=bool)
 STRIPE_SECRET_KEY=config("STRIPE_SECRET_KEY",default="",cast=str)
+STRIPE_TEST_OVERRIDE=config("STRIPE_TEST_OVERRIDE",default=False,cast=bool)
 
-if "sk_test_" in STRIPE_SECRET_KEY and not DJANGO_DEBUG:
+if "sk_test_" in STRIPE_SECRET_KEY and not DJANGO_DEBUG and not STRIPE_TEST_OVERRIDE:
     raise ValueError("STRIPE_SECRET_KEY is not configured correctly")
 
 stripe.api_key = STRIPE_SECRET_KEY
