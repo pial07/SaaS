@@ -7,7 +7,7 @@ on:
 
 jobs:
   hello:
-    runs-on: ubuntu-liatest
+    runs-on: ubuntu-latest
     steps:
       - name: Hello World
         run: echo "Hello Pial"
